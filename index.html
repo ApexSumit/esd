@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esdelics Tournament Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c1e 0%, #140721 70%, #0c1525 100%);
+            font-family: 'Exo 2', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(180, 0, 80, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 120, 200, 0.05) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        /* Controller button matrix effect */
+        .controller-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .controller-button {
+            position: absolute;
+            font-size: 16px;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+        }
+
+        .triangle { color: #00aaff; }
+        .square { color: #ff0055; }
+        .circle { color: #00cc88; }
+        .x { color: #ffcc00; }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            font-weight: 900;
+            background: linear-gradient(45deg, #cc0044, #0088cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(180, 0, 100, 0.2);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: #a0a0ff;
+            margin-top: 10px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .form-container {
+            background: rgba(15, 15, 35, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(80, 80, 180, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #cc0044, #0088cc, #cc0044, #0088cc);
+            z-index: -1;
+            border-radius: 17px;
+            animation: gradient-border 6s linear infinite;
+            background-size: 300% 300%;
+            opacity: 0.7;
+        }
+
+        @keyframes gradient-border {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.3rem, 3vw, 1.5rem);
+            color: #0088cc;
+            margin: 22px 0 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 136, 204, 0.3);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #0088cc, transparent);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 400;
+            color: #a0a0ff;
+            font-size: clamp(0.9rem, 2.5vw, 0.95rem);
+        }
+
+        .required::after {
+            content: " *";
+            color: #cc0044;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 13px;
+            background: rgba(10, 15, 30, 0.7);
+            border: 1px solid rgba(80, 80, 180, 0.3);
+            border-radius: 7px;
+            color: white;
+            font-size: clamp(0.95rem, 2.5vw, 1rem);
+            transition: all 0.3s ease;
+            font-family: 'Exo 2', sans-serif;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #0088cc;
+            box-shadow: 0 0 10px rgba(0, 136, 204, 0.4);
+            background: rgba(15, 25, 50, 0.7);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .radio-option input {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 14px;
+            background: rgba(20, 25, 50, 0.6);
+            border: 1px solid rgba(80, 80, 180, 0.3);
+            border-radius: 7px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .radio-option input:checked + label {
+            background: rgba(0, 80, 180, 0.3);
+            border-color: #0088cc;
+            box-shadow: 0 0 12px rgba(0, 136, 204, 0.4);
+            color: #00ccff;
+        }
+
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .file-upload {
+            position: relative;
+            padding: 18px;
+            border: 2px dashed rgba(80, 80, 180, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            background: rgba(10, 15, 30, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: #0088cc;
+            background: rgba(15, 25, 50, 0.5);
+        }
+
+        .file-upload i {
+            font-size: 2.3rem;
+            color: #0088cc;
+            margin-bottom: 12px;
+        }
+
+        .file-upload p {
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            color: #a0a0ff;
+            margin-bottom: 5px;
+        }
+
+        .good-luck {
+            background: linear-gradient(rgba(10, 15, 30, 0.9), rgba(10, 15, 30, 0.9));
+            background-size: cover;
+            padding: 35px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 28px 0;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(80, 80, 180, 0.3);
+        }
+
+        .good-luck::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 136, 204, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(204, 0, 68, 0.1) 0%, transparent 40%);
+            opacity: 0.2;
+        }
+
+        .good-luck h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(0, 136, 204, 0.6);
+            margin-bottom: 12px;
+        }
+
+        .good-luck p {
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            color: #a0a0ff;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #cc0044, #0088cc);
+            border: none;
+            border-radius: 7px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.1rem, 2.5vw, 1.2rem);
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #667;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            padding: 15px;
+        }
+
+        .status-message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .success {
+            background: rgba(0, 200, 83, 0.15);
+            border: 1px solid #00c853;
+            color: #00c853;
+        }
+
+        .error {
+            background: rgba(213, 0, 0, 0.15);
+            border: 1px solid #d50000;
+            color: #ff5252;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .form-container {
+                padding: 20px 15px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .radio-option {
+                min-width: 100%;
+            }
+            
+            .good-luck {
+                padding: 25px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                margin-bottom: 20px;
+            }
+            
+            .section-title {
+                margin: 18px 0 12px;
+            }
+            
+            .team-members {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pulse {
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(0, 136, 204, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 136, 204, 0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Controller button matrix background -->
+    <div class="controller-bg" id="controllerBg"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">ESDELICS</div>
+            <div class="subtitle">BATTLEGROUNDS MOBILE INDIA TOURNAMENT</div>
+        </div>
+        
+        <div class="form-container">
+            <div id="statusMessage" class="status-message"></div>
+            
+            <form id="tournamentForm">
+                <div class="section-title">PLAYER INFORMATION</div>
+                
+                <div class="input-group">
+                    <label for="fullName" class="required">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name">
+                </div>
+                
+                <div class="input-group">
+                    <label for="email" class="required">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="input-group">
+                    <label for="phone" class="required">Contact Number (WhatsApp preferred)</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number">
+                </div>
+                
+                <div class="input-group">
+                    <label class="required">Number of players in your team</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="team1v4" name="teamSize" value="1v4" required>
+                            <label for="team1v4">1v4</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="team2v4" name="teamSize" value="2v4">
+                            <label for="team2v4">2v4</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="team3v4" name="teamSize" value="3v4">
+                            <label for="team3v4">3v4</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="team4v4" name="teamSize" value="4v4">
+                            <label for="team4v4">4v4</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="teamName" class="required">Team Name</label>
+                    <input type="text" id="teamName" name="teamName" required placeholder="Enter your team name">
+                </div>
+                
+                <div class="section-title">IN-GAME LEADER (IGL) DETAILS</div>
+                
+                <div class="input-group">
+                    <label for="iglName" class="required">IGL Full Name</label>
+                    <input type="text" id="iglName" name="iglName" required placeholder="In-Game Leader's name">
+                </div>
+                
+                <div class="input-group">
+                    <label for="iglId" class="required">IGL BGMI ID</label>
+                    <input type="text" id="iglId" name="iglId" required placeholder="IGL's BGMI ID">
+                </div>
+                
+                <div class="input-group">
+                    <label for="iglContact" class="required">IGL Contact Number</label>
+                    <input type="tel" id="iglContact" name="iglContact" required placeholder="IGL's contact number">
+                </div>
+                
+                <div class="section-title">TEAM MEMBERS</div>
+                
+                <div class="team-members">
+                    <div class="input-group">
+                        <label for="member1Id">Member 1 BGMI ID</label>
+                        <input type="text" id="member1Id" name="member1Id" placeholder="Member 1 BGMI ID">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="member1Contact">Member 1 Contact</label>
+                        <input type="tel" id="member1Contact" name="member1Contact" placeholder="Member 1 contact">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="member2Id">Member 2 BGMI ID</label>
+                        <input type="text" id="member2Id" name="member2Id" placeholder="Member 2 BGMI ID">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="member2Contact">Member 2 Contact</label>
+                        <input type="tel" id="member2Contact" name="member2Contact" placeholder="Member 2 contact">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="member3Id">Member 3 BGMI ID</label>
+                        <input type="text" id="member3Id" name="member3Id" placeholder="Member 3 BGMI ID">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="member3Contact">Member 3 Contact</label>
+                        <input type="tel" id="member3Contact" name="member3Contact" placeholder="Member 3 contact">
+                    </div>
+                </div>
+                
+                <div class="section-title">PROFILE VERIFICATION</div>
+                
+                <div class="input-group">
+                    <label for="profileScreenshot" class="required">Upload BGMI Profile Screenshot</label>
+                    <div class="file-upload" id="fileUploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & drop your file here or click to browse</p>
+                        <p>Accepted formats: JPG, PNG, PDF (Max 10MB)</p>
+                        <input type="file" id="profileScreenshot" name="profileScreenshot" accept=".jpg,.jpeg,.png,.pdf" required style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="good-luck">
+                    <h2>ALL THE BEST!</h2>
+                    <p>Your journey to become the next Esdelics Champion begins here. Prepare your strategy, coordinate with your team, and dominate the battleground!</p>
+                </div>
+                
+                <button type="submit" class="submit-btn pulse" id="submitBtn">SUBMIT REGISTRATION <i class="fas fa-arrow-right"></i></button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            © 2023 Esdelics Esports. All rights reserved. | Battlegrounds Mobile India is a registered trademark of Krafton, Inc.
+        </div>
+    </div>
+
+    <script>
+        // Create controller button matrix effect
+        const controllerBg = document.getElementById('controllerBg');
+        const buttonTypes = ['triangle', 'square', 'circle', 'x'];
+        const colors = ['#00aaff', '#ff0055', '#00cc88', '#ffcc00'];
+        
+        for (let i = 0; i < 80; i++) {
+            const button = document.createElement('div');
+            button.className = `controller-button ${buttonTypes[i % 4]}`;
+            button.innerHTML = getButtonSymbol(buttonTypes[i % 4]);
+            
+            // Position randomly on screen
+            button.style.left = `${Math.random() * 100}%`;
+            button.style.top = `${Math.random() * 100}%`;
+            
+            // Random size
+            const size = 12 + Math.random() * 24;
+            button.style.fontSize = `${size}px`;
+            
+            // Random animation duration
+            const duration = 10 + Math.random() * 20;
+            button.style.animationDuration = `${duration}s`;
+            
+            // Random delay
+            button.style.animationDelay = `-${Math.random() * 20}s`;
+            
+            controllerBg.appendChild(button);
+        }
+        
+        function getButtonSymbol(type) {
+            switch(type) {
+                case 'triangle': return '▲';
+                case 'square': return '■';
+                case 'circle': return '●';
+                case 'x': return '✕';
+                default: return '●';
+            }
+        }
+        
+        // Form submission
+        document.getElementById('tournamentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Processing...';
+            submitBtn.disabled = true;
+            
+            // Form validation logic
+            const fileInput = document.getElementById('profileScreenshot');
+            if (fileInput.files.length > 0) {
+                const fileSize = fileInput.files[0].size / 1024 / 1024; // in MB
+                if (fileSize > 10) {
+                    showMessage('File size exceeds 10MB. Please upload a smaller file.', 'error');
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+            }
+            
+            // Get form data
+            const formData = new FormData(this);
+            
+            // Send data to Google Sheets via Google Apps Script
+            sendDataToGoogleSheets(formData);
+        });
+        
+        // File upload interactions
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('profileScreenshot');
+        
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.borderColor = '#0088cc';
+            fileUploadArea.style.boxShadow = '0 0 12px rgba(0, 136, 204, 0.4)';
+        });
+        
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.style.borderColor = 'rgba(80, 80, 180, 0.3)';
+            fileUploadArea.style.boxShadow = 'none';
+        });
+        
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.style.borderColor = 'rgba(80, 80, 180, 0.3)';
+            fileUploadArea.style.boxShadow = 'none';
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                updateFileUploadDisplay(e.dataTransfer.files[0]);
+            }
+        });
+        
+        // Clicking on the upload area triggers the file input
+        fileUploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // Update file upload area when a file is selected
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                updateFileUploadDisplay(this.files[0]);
+            }
+        });
+        
+        function updateFileUploadDisplay(file) {
+            fileUploadArea.innerHTML = `
+                <i class="fas fa-file-alt"></i>
+                <p>${file.name}</p>
+                <p>${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            `;
+        }
+        
+        function showMessage(message, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.style.display = 'block';
+            
+            // Auto hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function sendDataToGoogleSheets(formData) {
+            // Google Apps Script deployment URL
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzCFoJhuqOtOvg8lhd0G_wBQM4lVogj7SLHdIh1zA1-35YCvrpH1QK5i2Ju5iqfcC4r7g/exec';
+            
+            // Add timestamp
+            formData.append('timestamp', new Date().toISOString());
+            
+            // Send data to Google Sheets
+            fetch(scriptURL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.result === 'success') {
+                    showMessage('Registration submitted successfully! Good luck in the tournament!', 'success');
+                    document.getElementById('tournamentForm').reset();
+                    fileUploadArea.innerHTML = `
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & drop your file here or click to browse</p>
+                        <p>Accepted formats: JPG, PNG, PDF (Max 10MB)</p>
+                    `;
+                } else {
+                    throw new Error(data.message || 'Unknown error occurred');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage(`Submission failed: ${error.message}`, 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.innerHTML = 'SUBMIT REGISTRATION <i class="fas fa-arrow-right"></i>';
+                submitBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
