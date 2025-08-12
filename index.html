@@ -152,6 +152,7 @@
 
         .input-group {
             margin-bottom: 18px;
+            position: relative;
         }
 
         label {
@@ -184,6 +185,13 @@
             border-color: #0088cc;
             box-shadow: 0 0 10px rgba(0, 136, 204, 0.4);
             background: rgba(15, 25, 50, 0.7);
+        }
+
+        .error-message {
+            display: none;
+            color: #ff5252;
+            font-size: 0.85rem;
+            margin-top: 5px;
         }
 
         .radio-group {
@@ -381,6 +389,17 @@
             to { transform: rotate(360deg); }
         }
 
+        .team-size-warning {
+            display: none;
+            background: rgba(204, 0, 68, 0.15);
+            border: 1px solid rgba(204, 0, 68, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            color: #ff99bb;
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -455,16 +474,19 @@
                 <div class="input-group">
                     <label for="fullName" class="required">Full Name</label>
                     <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name">
+                    <div class="error-message" id="fullNameError">Please enter your full name</div>
                 </div>
                 
                 <div class="input-group">
                     <label for="email" class="required">Email Address</label>
                     <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    <div class="error-message" id="emailError">Please enter a valid email address</div>
                 </div>
                 
                 <div class="input-group">
                     <label for="phone" class="required">Contact Number (WhatsApp preferred)</label>
                     <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number">
+                    <div class="error-message" id="phoneError">Please enter a valid phone number</div>
                 </div>
                 
                 <div class="input-group">
@@ -487,11 +509,15 @@
                             <label for="team4v4">4v4</label>
                         </div>
                     </div>
+                    <div class="team-size-warning" id="teamSizeWarning">
+                        <i class="fas fa-exclamation-circle"></i> Note: You must have the exact number of players as your team size
+                    </div>
                 </div>
                 
                 <div class="input-group">
                     <label for="teamName" class="required">Team Name</label>
                     <input type="text" id="teamName" name="teamName" required placeholder="Enter your team name">
+                    <div class="error-message" id="teamNameError">Please enter your team name</div>
                 </div>
                 
                 <div class="section-title">IN-GAME LEADER (IGL) DETAILS</div>
@@ -499,16 +525,19 @@
                 <div class="input-group">
                     <label for="iglName" class="required">IGL Full Name</label>
                     <input type="text" id="iglName" name="iglName" required placeholder="In-Game Leader's name">
+                    <div class="error-message" id="iglNameError">Please enter IGL's name</div>
                 </div>
                 
                 <div class="input-group">
                     <label for="iglId" class="required">IGL BGMI ID</label>
                     <input type="text" id="iglId" name="iglId" required placeholder="IGL's BGMI ID">
+                    <div class="error-message" id="iglIdError">Please enter IGL's BGMI ID</div>
                 </div>
                 
                 <div class="input-group">
                     <label for="iglContact" class="required">IGL Contact Number</label>
                     <input type="tel" id="iglContact" name="iglContact" required placeholder="IGL's contact number">
+                    <div class="error-message" id="iglContactError">Please enter IGL's contact number</div>
                 </div>
                 
                 <div class="section-title">TEAM MEMBERS</div>
@@ -555,6 +584,7 @@
                         <p>Accepted formats: JPG, PNG, PDF (Max 10MB)</p>
                         <input type="file" id="profileScreenshot" name="profileScreenshot" accept=".jpg,.jpeg,.png,.pdf" required style="display: none;">
                     </div>
+                    <div class="error-message" id="fileError">Please upload a valid file (JPG, PNG, PDF, max 10MB)</div>
                 </div>
                 
                 <div class="good-luck">
@@ -575,7 +605,6 @@
         // Create controller button matrix effect
         const controllerBg = document.getElementById('controllerBg');
         const buttonTypes = ['triangle', 'square', 'circle', 'x'];
-        const colors = ['#00aaff', '#ff0055', '#00cc88', '#ffcc00'];
         
         for (let i = 0; i < 80; i++) {
             const button = document.createElement('div');
@@ -610,27 +639,82 @@
             }
         }
         
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Validate required fields
+            const requiredFields = [
+                'fullName', 'email', 'phone', 'teamName', 
+                'iglName', 'iglId', 'iglContact'
+            ];
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    document.getElementById(`${field}Error`).style.display = 'block';
+                    isValid = false;
+                }
+            });
+            
+            // Validate email
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value)) {
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate phone numbers
+            const phoneNumbers = ['phone', 'iglContact', 'member1Contact', 'member2Contact', 'member3Contact'];
+            const phoneRegex = /^[0-9]{10,15}$/;
+            
+            phoneNumbers.forEach(id => {
+                const phoneInput = document.getElementById(id);
+                if (phoneInput && phoneInput.value && !phoneRegex.test(phoneInput.value)) {
+                    document.getElementById(`${id}Error`).style.display = 'block';
+                    isValid = false;
+                }
+            });
+            
+            // Validate file
+            const fileInput = document.getElementById('profileScreenshot');
+            if (fileInput.files.length === 0) {
+                document.getElementById('fileError').style.display = 'block';
+                isValid = false;
+            } else {
+                const file = fileInput.files[0];
+                const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+                const fileSize = file.size / 1024 / 1024; // in MB
+                
+                if (!validTypes.includes(file.type) || fileSize > 10) {
+                    document.getElementById('fileError').style.display = 'block';
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+        
         // Form submission
         document.getElementById('tournamentForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Validate form before submission
+            if (!validateForm()) {
+                return;
+            }
             
             // Show loading state
             const submitBtn = document.getElementById('submitBtn');
             const originalBtnText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<span class="loading"></span> Processing...';
             submitBtn.disabled = true;
-            
-            // Form validation logic
-            const fileInput = document.getElementById('profileScreenshot');
-            if (fileInput.files.length > 0) {
-                const fileSize = fileInput.files[0].size / 1024 / 1024; // in MB
-                if (fileSize > 10) {
-                    showMessage('File size exceeds 10MB. Please upload a smaller file.', 'error');
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                    return;
-                }
-            }
             
             // Get form data
             const formData = new FormData(this);
@@ -662,6 +746,7 @@
             if (e.dataTransfer.files.length) {
                 fileInput.files = e.dataTransfer.files;
                 updateFileUploadDisplay(e.dataTransfer.files[0]);
+                document.getElementById('fileError').style.display = 'none';
             }
         });
         
@@ -674,6 +759,7 @@
         fileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
                 updateFileUploadDisplay(this.files[0]);
+                document.getElementById('fileError').style.display = 'none';
             }
         });
         
@@ -703,44 +789,94 @@
             // Google Apps Script deployment URL
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzCFoJhuqOtOvg8lhd0G_wBQM4lVogj7SLHdIh1zA1-35YCvrpH1QK5i2Ju5iqfcC4r7g/exec';
             
-            // Add timestamp
-            formData.append('timestamp', new Date().toISOString());
+            // Get the file input element and the selected file
+            const fileInput = document.getElementById('profileScreenshot');
+            const file = fileInput.files[0];
             
-            // Send data to Google Sheets
-            fetch(scriptURL, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.result === 'success') {
-                    showMessage('Registration submitted successfully! Good luck in the tournament!', 'success');
-                    document.getElementById('tournamentForm').reset();
-                    fileUploadArea.innerHTML = `
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Drag & drop your file here or click to browse</p>
-                        <p>Accepted formats: JPG, PNG, PDF (Max 10MB)</p>
-                    `;
-                } else {
-                    throw new Error(data.message || 'Unknown error occurred');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showMessage(`Submission failed: ${error.message}`, 'error');
-            })
-            .finally(() => {
-                // Restore button state
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.innerHTML = 'SUBMIT REGISTRATION <i class="fas fa-arrow-right"></i>';
-                submitBtn.disabled = false;
-            });
+            // Create a FileReader to read the file as base64
+            const reader = new FileReader();
+            
+            reader.onloadend = function() {
+                // Prepare the data object to send
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    fullName: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    teamSize: document.querySelector('input[name="teamSize"]:checked').value,
+                    teamName: document.getElementById('teamName').value,
+                    iglName: document.getElementById('iglName').value,
+                    iglId: document.getElementById('iglId').value,
+                    iglContact: document.getElementById('iglContact').value,
+                    member1Id: document.getElementById('member1Id').value || '',
+                    member1Contact: document.getElementById('member1Contact').value || '',
+                    member2Id: document.getElementById('member2Id').value || '',
+                    member2Contact: document.getElementById('member2Contact').value || '',
+                    member3Id: document.getElementById('member3Id').value || '',
+                    member3Contact: document.getElementById('member3Contact').value || '',
+                    file: {
+                        name: file.name,
+                        mimeType: file.type,
+                        data: reader.result.split(',')[1] // Remove data URL prefix
+                    }
+                };
+                
+                // Send data to Google Sheets via Apps Script
+                fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.result === 'success') {
+                        showMessage('Registration submitted successfully! Good luck in the tournament!', 'success');
+                        document.getElementById('tournamentForm').reset();
+                        fileUploadArea.innerHTML = `
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop your file here or click to browse</p>
+                            <p>Accepted formats: JPG, PNG, PDF (Max 10MB)</p>
+                        `;
+                    } else {
+                        throw new Error(data.message || 'Unknown error occurred');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showMessage(`Submission failed: ${error.message}`, 'error');
+                })
+                .finally(() => {
+                    // Restore button state
+                    const submitBtn = document.getElementById('submitBtn');
+                    submitBtn.innerHTML = 'SUBMIT REGISTRATION <i class="fas fa-arrow-right"></i>';
+                    submitBtn.disabled = false;
+                });
+            };
+            
+            // Read the file as data URL
+            reader.readAsDataURL(file);
         }
+        
+        // Team size selection
+        const teamSizeRadios = document.querySelectorAll('input[name="teamSize"]');
+        const teamSizeWarning = document.getElementById('teamSizeWarning');
+        
+        teamSizeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value !== '4v4') {
+                    teamSizeWarning.style.display = 'block';
+                } else {
+                    teamSizeWarning.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
